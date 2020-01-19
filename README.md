@@ -11,6 +11,7 @@ Terminates HTTP server.
 
 * [http-terminator 🦾](#http-terminator)
     * [Behaviour](#http-terminator-behaviour)
+    * [API](#http-terminator-api)
     * [Usage](#http-terminator-usage)
         * [Usage with express.js](#http-terminator-usage-usage-with-express-js)
 
@@ -21,6 +22,35 @@ Terminates HTTP server.
 When you call [`server.close()`](https://nodejs.org/api/http.html#http_server_close_callback), it stops the server from accepting new connections, but it keeps the existing connections open indefinitely. This can result in your server hanging indefinitely due to keep-alive connections or because of the ongoing requests that do not produce a response. Therefore, in order to close the server, you must track creation of all connections and terminate them yourself.
 
 http-terminator implements the logic for tracking all connections and their termination upon a timeout. http-terminator also ensures graceful communication of the server intention to shutdown to any clients that are currently receiving response from this server.
+
+<a name="http-terminator-api"></a>
+## API
+
+```js
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+/**
+ * @property httpResponseTimeout Number of milliseconds to allow for the active sockets to complete serving the response (default: 1000).
+ * @property server Instance of http.Server.
+ */
+type HttpTerminatorConfigurationInputType = {|
+  +httpResponseTimeout?: number,
+  +server: Server,
+|};
+
+/**
+ * @property terminate Terminates HTTP server.
+ */
+type HttpTerminatorType = {|
+  +terminate: () => Promise<void>,
+|};
+
+
+const httpTerminator: HttpTerminatorType = createHttpTerminator(configuration: HttpTerminatorConfigurationInputType);
+
+```
 
 <a name="http-terminator-usage"></a>
 ## Usage
@@ -39,7 +69,7 @@ const httpTerminator = createHttpTerminator({
   server,
 });
 
-httpTerminator.terminate();
+await httpTerminator.terminate();
 
 ```
 
@@ -60,6 +90,6 @@ const httpTerminator = createHttpTerminator({
   server,
 });
 
-httpTerminator.terminate();
+await httpTerminator.terminate();
 
 ```

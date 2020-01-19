@@ -16,6 +16,34 @@ When you call [`server.close()`](https://nodejs.org/api/http.html#http_server_cl
 
 http-terminator implements the logic for tracking all connections and their termination upon a timeout. http-terminator also ensures graceful communication of the server intention to shutdown to any clients that are currently receiving response from this server.
 
+## API
+
+```js
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+/**
+ * @property httpResponseTimeout Number of milliseconds to allow for the active sockets to complete serving the response (default: 1000).
+ * @property server Instance of http.Server.
+ */
+type HttpTerminatorConfigurationInputType = {|
+  +httpResponseTimeout?: number,
+  +server: Server,
+|};
+
+/**
+ * @property terminate Terminates HTTP server.
+ */
+type HttpTerminatorType = {|
+  +terminate: () => Promise<void>,
+|};
+
+
+const httpTerminator: HttpTerminatorType = createHttpTerminator(configuration: HttpTerminatorConfigurationInputType);
+
+```
+
 ## Usage
 
 Use `createHttpTerminator` to create an instance of http-terminator and instead of using `server.close()`, use `httpTerminator.terminate()`, e.g.
@@ -32,7 +60,7 @@ const httpTerminator = createHttpTerminator({
   server,
 });
 
-httpTerminator.terminate();
+await httpTerminator.terminate();
 
 ```
 
@@ -52,6 +80,6 @@ const httpTerminator = createHttpTerminator({
   server,
 });
 
-httpTerminator.terminate();
+await httpTerminator.terminate();
 
 ```
