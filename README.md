@@ -10,14 +10,22 @@
 Terminates HTTP server.
 
 * [http-terminator 🦾](#http-terminator)
+    * [Behaviour](#http-terminator-behaviour)
     * [Usage](#http-terminator-usage)
         * [Usage with express.js](#http-terminator-usage-usage-with-express-js)
 
 
+<a name="http-terminator-behaviour"></a>
+## Behaviour
+
+When you call [`server.close()`](https://nodejs.org/api/http.html#http_server_close_callback), it stops the server from accepting new connections, but it keeps the existing connections open indefinitely. This can result in your server hanging indefinitely due to keep-alive connections or because of the ongoing requests that do not produce a response. Therefore, in order to close the server, you must track creation of all connections and terminate them yourself.
+
+http-terminator implements the logic for tracking all connections and their termination upon a timeout. http-terminator also ensures graceful communication of the server intention to shutdown to any clients that are currently receiving response from this server.
+
 <a name="http-terminator-usage"></a>
 ## Usage
 
-Use `createHttpTerminator` to create an instance of http-terminator. Close HTTP server as usual (`server.close()`) and follow up with `httpTerminator.terminate()`, e.g.
+Use `createHttpTerminator` to create an instance of http-terminator and instead of using `server.close()`, use `httpTerminator.terminate()`, e.g.
 
 ```js
 import http from 'http';

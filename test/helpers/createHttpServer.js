@@ -12,6 +12,7 @@ import {
 type RequestHandlerType = (incomingMessage: HttpIncomingMessage, outgoingMessage: HttpServerResponse) => void;
 
 type HttpServerType = {|
+  +getConnections: () => Promise<number>,
   +port: number,
   +server: Server,
   +stop: () => Promise<void>,
@@ -33,6 +34,10 @@ export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => 
     return serverShutingDown;
   };
 
+  const getConnections = () => {
+    return promisify(server.getConnections.bind(server))();
+  };
+
   return new Promise((resolve, reject) => {
     server.once('error', reject);
 
@@ -43,6 +48,7 @@ export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => 
       const url = 'http://localhost:' + port;
 
       resolve({
+        getConnections,
         port,
         server,
         stop,

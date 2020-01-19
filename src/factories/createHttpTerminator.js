@@ -53,10 +53,24 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       return terminating;
     }
 
-    for (const socket of sockets) {
-      const incomingMessage = socket._httpMessage;
+    terminating = new Promise((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
 
-      if (incomingMessage) {
+    for (const socket of sockets) {
+      const serverResponse = socket._httpMessage;
+
+      if (serverResponse) {
+        if (!serverResponse.headersSent) {
+          serverResponse.setHeader('connection', 'close');
+        }
+
         continue;
       }
 
@@ -71,15 +85,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       }
     }
 
-    return new Promise((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
+    return terminating;
   };
 
   return {
