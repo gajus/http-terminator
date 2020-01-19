@@ -40,7 +40,9 @@ type HttpTerminatorType = {|
 |};
 
 
-const httpTerminator: HttpTerminatorType = createHttpTerminator(configuration: HttpTerminatorConfigurationInputType);
+const httpTerminator: HttpTerminatorType = createHttpTerminator(
+  configuration: HttpTerminatorConfigurationInputType
+);
 
 ```
 
