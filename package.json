@@ -1,0 +1,90 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ],
+    "helpers": [
+      "test/helpers/**/*"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "sources": [
+      "src/**/*"
+    ]
+  },
+  "dependencies": {
+    "roarr": "^2.14.6",
+    "delay": "^4.3.0"
+  },
+  "description": "Terminates HTTP server.",
+  "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/plugin-transform-flow-strip-types": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/register": "^7.8.3",
+    "ava": "^2.4.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "babel-plugin-transform-export-default-name": "^2.0.4",
+    "coveralls": "^3.0.9",
+    "eslint": "^6.8.0",
+    "eslint-config-canonical": "^18.1.0",
+    "flow-bin": "^0.116.1",
+    "flow-copy-source": "^2.0.9",
+    "gitdown": "^3.1.2",
+    "got": "^10.2.2",
+    "husky": "^4.0.10",
+    "nyc": "^15.0.0",
+    "semantic-release": "^16.0.2",
+    "sinon": "^8.1.0"
+  },
+  "engines": {
+    "node": ">10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run test && npm run build"
+    }
+  },
+  "keywords": [
+    "kubernetes",
+    "prometheus"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "http-terminator",
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "instrument": false,
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "silent": true,
+    "sourceMap": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/http-terminator"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
+    "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
+    "lint": "eslint ./src ./test && flow",
+    "test": "NODE_ENV=test ava --verbose --serial"
+  },
+  "version": "1.0.0"
+}
