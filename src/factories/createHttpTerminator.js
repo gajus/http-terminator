@@ -1,5 +1,6 @@
 // @flow
 
+import http from 'http';
 import delay from 'delay';
 import type {
   HttpTerminatorType,
@@ -24,6 +25,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
   const server = configuration.server;
 
   const sockets = new Set();
+  const secureSockets = new Set();
 
   server.on('connection', (socket) => {
     sockets.add(socket);
@@ -33,10 +35,12 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     });
   });
 
-  server.on('request', (incomingMessage, outgoingMessage) => {
-    if (!outgoingMessage.headersSent) {
-      outgoingMessage.setHeader('connection', 'close');
-    }
+  server.on('secureConnection', (socket) => {
+    secureSockets.add(socket);
+
+    server.once('close', () => {
+      secureSockets.delete(socket);
+    });
   });
 
   let terminating;
@@ -59,16 +63,33 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       return terminating;
     }
 
+    server.on('request', (incomingMessage, outgoingMessage) => {
+      if (!outgoingMessage.headersSent) {
+        outgoingMessage.setHeader('connection', 'close');
+      }
+    });
+
     for (const socket of sockets) {
       // This is the HTTP CONNECT request socket.
-      if (!socket.url) {
+      if (!(socket.server instanceof http.Server)) {
         continue;
       }
 
       const serverResponse = socket._httpMessage;
 
-      // if (!socket._httpMessage)
-      // console.log('serverResponse', socket);
+      if (serverResponse) {
+        if (!serverResponse.headersSent) {
+          serverResponse.setHeader('connection', 'close');
+        }
+
+        continue;
+      }
+
+      destroySocket(socket);
+    }
+
+    for (const socket of secureSockets) {
+      const serverResponse = socket._httpMessage;
 
       if (serverResponse) {
         if (!serverResponse.headersSent) {

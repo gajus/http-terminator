@@ -114,7 +114,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     });
 
     // eslint-disable-next-line ava/use-t-well
-    t.timeout(500);
+    t.timeout(600);
 
     const terminator = createHttpTerminator({
       httpResponseTimeout: 150,
@@ -221,5 +221,37 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
 
     t.is(response1.headers.connection, 'close');
     t.is(response1.body, 'baz');
+  });
+
+  test('does not send {connection: close} when server is not terminating', async (t) => {
+    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+      setTimeout(() => {
+        outgoingMessage.end('foo');
+      }, 50);
+    });
+
+    // eslint-disable-next-line ava/use-t-well
+    t.timeout(100);
+
+    createHttpTerminator({
+      server: httpServer.server,
+    });
+
+    const httpAgent = new KeepAliveHttpAgent({
+      maxSockets: 1,
+    });
+
+    const httpsAgent = new KeepAliveHttpsAgent({
+      maxSockets: 1,
+    });
+
+    const response = await got(httpServer.url, {
+      agent: {
+        http: httpAgent,
+        https: httpsAgent,
+      },
+    });
+
+    t.is(response.headers.connection, 'keep-alive');
   });
 };
