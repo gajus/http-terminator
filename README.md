@@ -13,7 +13,8 @@ Gracefully terminates HTTP(S) server.
     * [Behaviour](#http-terminator-behaviour)
     * [API](#http-terminator-api)
     * [Usage](#http-terminator-usage)
-        * [Usage with express.js](#http-terminator-usage-usage-with-express-js)
+        * [Usage with [Express](https://www.npmjs.com/package/express)](#http-terminator-usage-usage-with-express-https-www-npmjs-com-package-express)
+        * [Usage with [Koa](https://www.npmjs.com/package/koa)](#http-terminator-usage-usage-with-koa-https-www-npmjs-com-package-koa)
     * [Alternative libraries](#http-terminator-alternative-libraries)
 
 
@@ -76,8 +77,8 @@ await httpTerminator.terminate();
 
 ```
 
-<a name="http-terminator-usage-usage-with-express-js"></a>
-### Usage with express.js
+<a name="http-terminator-usage-usage-with-express-https-www-npmjs-com-package-express"></a>
+### Usage with <a href="https://www.npmjs.com/package/express">Express</a>
 
 ```js
 import express from 'express';
@@ -86,6 +87,27 @@ import {
 } from 'http-terminator';
 
 const app = express();
+
+const server = app.listen();
+
+const httpTerminator = createHttpTerminator({
+  server,
+});
+
+await httpTerminator.terminate();
+
+```
+
+<a name="http-terminator-usage-usage-with-koa-https-www-npmjs-com-package-koa"></a>
+### Usage with <a href="https://www.npmjs.com/package/koa">Koa</a>
+
+```js
+import Koa from 'koa';
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+const app = new Koa();
 
 const server = app.listen();
 

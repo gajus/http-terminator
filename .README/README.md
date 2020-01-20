@@ -66,7 +66,7 @@ await httpTerminator.terminate();
 
 ```
 
-### Usage with express.js
+### Usage with [Express](https://www.npmjs.com/package/express)
 
 ```js
 import express from 'express';
@@ -75,6 +75,26 @@ import {
 } from 'http-terminator';
 
 const app = express();
+
+const server = app.listen();
+
+const httpTerminator = createHttpTerminator({
+  server,
+});
+
+await httpTerminator.terminate();
+
+```
+
+### Usage with [Koa](https://www.npmjs.com/package/koa)
+
+```js
+import Koa from 'koa';
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+const app = new Koa();
 
 const server = app.listen();
 
