@@ -59,18 +59,16 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       return terminating;
     }
 
-    terminating = new Promise((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
-
     for (const socket of sockets) {
+      // This is the HTTP CONNECT request socket.
+      if (!socket.url) {
+        continue;
+      }
+
       const serverResponse = socket._httpMessage;
+
+      // if (!socket._httpMessage)
+      // console.log('serverResponse', socket);
 
       if (serverResponse) {
         if (!serverResponse.headersSent) {
@@ -90,6 +88,16 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
         destroySocket(socket);
       }
     }
+
+    terminating = new Promise((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
 
     return terminating;
   };

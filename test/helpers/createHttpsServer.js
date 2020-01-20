@@ -3,14 +3,15 @@
 import {
   createServer,
   Server,
-  IncomingMessage as HttpIncomingMessage,
-  ServerResponse as HttpServerResponse,
-} from 'http';
+  IncomingMessage as HttpsIncomingMessage,
+  ServerResponse as HttpsServerResponse,
+} from 'https';
 import {
   promisify,
 } from 'util';
+import pem from 'pem';
 
-type RequestHandlerType = (incomingMessage: HttpIncomingMessage, outgoingMessage: HttpServerResponse) => void;
+type RequestHandlerType = (incomingMessage: HttpsIncomingMessage, outgoingMessage: HttpsServerResponse) => void;
 
 type HttpServerType = {|
   +getConnections: () => Promise<number>,
@@ -20,8 +21,25 @@ type HttpServerType = {|
   +url: string,
 |};
 
-export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => {
-  const server = createServer(requestHandler);
+const createCertificate = promisify(pem.createCertificate);
+
+export default async (requestHandler: RequestHandlerType): Promise<HttpServerType> => {
+  const {
+    serviceKey,
+    certificate,
+    csr,
+  } = await createCertificate({
+    days: 365,
+    selfSigned: true,
+  });
+
+  const httpsOptions = {
+    ca: csr,
+    cert: certificate,
+    key: serviceKey,
+  };
+
+  const server = createServer(httpsOptions, requestHandler);
 
   let serverShutingDown;
 
@@ -44,7 +62,7 @@ export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => 
 
     server.listen(() => {
       const port = server.address().port;
-      const url = 'http://localhost:' + port;
+      const url = 'https://localhost:' + port;
 
       resolve({
         getConnections,
