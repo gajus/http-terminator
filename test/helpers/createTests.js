@@ -8,10 +8,16 @@ import delay from 'delay';
 import got from 'got';
 import KeepAliveHttpAgent from 'agentkeepalive';
 import createHttpTerminator from '../../src/factories/createHttpTerminator';
+import type {
+  HttpServerFactoryType,
+} from './createHttpServer';
+import type {
+  HttpsServerFactoryType,
+} from './createHttpsServer';
 
 const KeepAliveHttpsAgent = KeepAliveHttpAgent.HttpsAgent;
 
-export default (createHttpServer) => {
+export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType) => {
   test('terminates HTTP server with no connections', async (t) => {
     const httpServer = await createHttpServer(() => {});
 

@@ -13,7 +13,7 @@ import pem from 'pem';
 
 type RequestHandlerType = (incomingMessage: HttpsIncomingMessage, outgoingMessage: HttpsServerResponse) => void;
 
-type HttpServerType = {|
+type HttpsServerType = {|
   +getConnections: () => Promise<number>,
   +port: number,
   +server: Server,
@@ -21,14 +21,14 @@ type HttpServerType = {|
   +url: string,
 |};
 
-const createCertificate = promisify(pem.createCertificate);
+export type HttpsServerFactoryType = (requestHandler: RequestHandlerType) => Promise<HttpsServerType>;
 
-export default async (requestHandler: RequestHandlerType): Promise<HttpServerType> => {
+export default async (requestHandler: RequestHandlerType): Promise<HttpsServerType> => {
   const {
     serviceKey,
     certificate,
     csr,
-  } = await createCertificate({
+  } = await promisify(pem.createCertificate)({
     days: 365,
     selfSigned: true,
   });

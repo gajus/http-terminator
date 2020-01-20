@@ -1,8 +1,11 @@
 // @flow
 
 import type {
-  Server,
+  Server as HttpServer,
 } from 'http';
+import type {
+  Server as HttpsServer,
+} from 'https';
 
 /**
  * @property httpResponseTimeout Number of milliseconds to allow for the active sockets to complete serving the response (default: 1000).
@@ -10,7 +13,7 @@ import type {
  */
 export type HttpTerminatorConfigurationInputType = {|
   +httpResponseTimeout?: number,
-  +server: Server,
+  +server: HttpServer | HttpsServer,
 |};
 
 /**
