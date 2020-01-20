@@ -13,8 +13,8 @@ Gracefully terminates HTTP(S) server.
     * [Behaviour](#http-terminator-behaviour)
     * [API](#http-terminator-api)
     * [Usage](#http-terminator-usage)
-        * [Usage with [Express](https://www.npmjs.com/package/express)](#http-terminator-usage-usage-with-express-https-www-npmjs-com-package-express)
-        * [Usage with [Koa](https://www.npmjs.com/package/koa)](#http-terminator-usage-usage-with-koa-https-www-npmjs-com-package-koa)
+        * [Usage with Express](#http-terminator-usage-usage-with-express)
+        * [Usage with Koa](#http-terminator-usage-usage-with-koa)
     * [Alternative libraries](#http-terminator-alternative-libraries)
 
 
@@ -77,8 +77,10 @@ await httpTerminator.terminate();
 
 ```
 
-<a name="http-terminator-usage-usage-with-express-https-www-npmjs-com-package-express"></a>
-### Usage with <a href="https://www.npmjs.com/package/express">Express</a>
+<a name="http-terminator-usage-usage-with-express"></a>
+### Usage with Express
+
+Usage with [Express](https://www.npmjs.com/package/express) example:
 
 ```js
 import express from 'express';
@@ -98,8 +100,10 @@ await httpTerminator.terminate();
 
 ```
 
-<a name="http-terminator-usage-usage-with-koa-https-www-npmjs-com-package-koa"></a>
-### Usage with <a href="https://www.npmjs.com/package/koa">Koa</a>
+<a name="http-terminator-usage-usage-with-koa"></a>
+### Usage with Koa
+
+Usage with [Koa](https://www.npmjs.com/package/koa) example:
 
 ```js
 import Koa from 'koa';

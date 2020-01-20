@@ -66,7 +66,9 @@ await httpTerminator.terminate();
 
 ```
 
-### Usage with [Express](https://www.npmjs.com/package/express)
+### Usage with Express
+
+Usage with [Express](https://www.npmjs.com/package/express) example:
 
 ```js
 import express from 'express';
@@ -86,7 +88,9 @@ await httpTerminator.terminate();
 
 ```
 
-### Usage with [Koa](https://www.npmjs.com/package/koa)
+### Usage with Koa
+
+Usage with [Koa](https://www.npmjs.com/package/koa) example:
 
 ```js
 import Koa from 'koa';
