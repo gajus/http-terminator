@@ -101,3 +101,4 @@ The main benefit of http-terminator is that:
 * it allows graceful timeout to sockets with ongoing HTTP requests
 * it properly handles HTTPS connections
 * it informs connections using keep-alive that server is shutting down by setting a `connection: close` header
+* it does not terminate the Node.js process
