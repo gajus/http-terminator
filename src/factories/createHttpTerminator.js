@@ -33,6 +33,12 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     });
   });
 
+  server.on('request', (incomingMessage, outgoingMessage) => {
+    if (!outgoingMessage.headersSent) {
+      outgoingMessage.setHeader('connection', 'close');
+    }
+  });
+
   let terminating;
 
   /**

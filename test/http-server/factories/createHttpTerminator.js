@@ -126,3 +126,74 @@ test('ongoing requests receive {connection: close} header', async (t) => {
   t.is(response.headers.connection, 'close');
   t.is(response.body, 'foo');
 });
+
+test('ongoing requests receive {connection: close} header (new request reusing an existing socket)', async (t) => {
+  // eslint-disable-next-line ava/use-t-well
+  t.timeout(1000);
+
+  const stub = sinon.stub();
+
+  stub
+    .onCall(0)
+    .callsFake((incomingMessage, outgoingMessage) => {
+      outgoingMessage.write('foo');
+
+      setTimeout(() => {
+        outgoingMessage.end('bar');
+      }, 50);
+    });
+
+  stub
+    .onCall(1)
+    .callsFake((incomingMessage, outgoingMessage) => {
+      // @todo Unable to intercept the response without the delay.
+      // When `end()` is called immediately, the `request` event
+      // already has `headersSent=true`. It is unclear how to intercept
+      // the response beforehand.
+      setTimeout(() => {
+        outgoingMessage.end('baz');
+      }, 50);
+    });
+
+  const httpServer = await createHttpServer(stub);
+
+  const terminator = createHttpTerminator({
+    httpResponseTimeout: 150,
+    server: httpServer.server,
+  });
+
+  const agent = new KeepAliveHttpAgent({
+    maxSockets: 1,
+  });
+
+  const request0 = got(httpServer.url, {
+    agent: {
+      http: agent,
+    },
+  });
+
+  await delay(50);
+
+  terminator.terminate();
+
+  const request1 = got(httpServer.url, {
+    agent: {
+      http: agent,
+    },
+    retry: 0,
+  });
+
+  await delay(50);
+
+  t.is(stub.callCount, 2);
+
+  const response0 = await request0;
+
+  t.is(response0.headers.connection, 'keep-alive');
+  t.is(response0.body, 'foobar');
+
+  const response1 = await request1;
+
+  t.is(response1.headers.connection, 'close');
+  t.is(response1.body, 'baz');
+});

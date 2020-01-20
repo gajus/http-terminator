@@ -19,8 +19,8 @@
     ]
   },
   "dependencies": {
-    "roarr": "^2.14.6",
-    "delay": "^4.3.0"
+    "delay": "^4.3.0",
+    "roarr": "^2.14.6"
   },
   "description": "Terminates HTTP server.",
   "devDependencies": {
