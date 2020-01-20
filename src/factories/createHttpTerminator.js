@@ -63,6 +63,14 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       return terminating;
     }
 
+    let resolveTerminating;
+    let rejectTerminating;
+
+    terminating = new Promise((resolve, reject) => {
+      resolveTerminating = resolve;
+      rejectTerminating = reject;
+    });
+
     server.on('request', (incomingMessage, outgoingMessage) => {
       if (!outgoingMessage.headersSent) {
         outgoingMessage.setHeader('connection', 'close');
@@ -110,14 +118,12 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
       }
     }
 
-    terminating = new Promise((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
+    server.close((error) => {
+      if (error) {
+        rejectTerminating(error);
+      } else {
+        resolveTerminating();
+      }
     });
 
     return terminating;
