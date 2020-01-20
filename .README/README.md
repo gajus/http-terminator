@@ -131,3 +131,17 @@ The main benefit of http-terminator is that:
 * it properly handles HTTPS connections
 * it informs connections using keep-alive that server is shutting down by setting a `connection: close` header
 * it does not terminate the Node.js process
+
+## FAQ
+
+### What is the use case for http-terminator?
+
+To gracefully terminate a HTTP server.
+
+We say that a service is gracefully terminated when service stops accepting new clients, but allows time to complete the existing requests.
+
+There are several reasons to terminate services gracefully:
+
+* Terminating a service gracefully ensures that the client experience is not affected (assuming the service is load-balanced).
+* If your application is stateful, then when services are not terminated gracefully, you are risking data corruption.
+* Forcing termination of the service with a timeout ensures timely termination of the service (otherwise the service can remain hanging indefinitely).

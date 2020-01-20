@@ -17,6 +17,8 @@ Gracefully terminates HTTP(S) server.
         * [Usage with Koa](#http-terminator-usage-usage-with-koa)
         * [Usage with other HTTP frameworks](#http-terminator-usage-usage-with-other-http-frameworks)
     * [Alternative libraries](#http-terminator-alternative-libraries)
+    * [FAQ](#http-terminator-faq)
+        * [What is the use case for http-terminator?](#http-terminator-faq-what-is-the-use-case-for-http-terminator)
 
 
 <a name="http-terminator-behaviour"></a>
@@ -147,3 +149,19 @@ The main benefit of http-terminator is that:
 * it properly handles HTTPS connections
 * it informs connections using keep-alive that server is shutting down by setting a `connection: close` header
 * it does not terminate the Node.js process
+
+<a name="http-terminator-faq"></a>
+## FAQ
+
+<a name="http-terminator-faq-what-is-the-use-case-for-http-terminator"></a>
+### What is the use case for http-terminator?
+
+To gracefully terminate a HTTP server.
+
+We say that a service is gracefully terminated when service stops accepting new clients, but allows time to complete the existing requests.
+
+There are several reasons to terminate services gracefully:
+
+* Terminating a service gracefully ensures that the client experience is not affected (assuming the service is load-balanced).
+* If your application is stateful, then when services are not terminated gracefully, you are risking data corruption.
+* Forcing termination of the service with a timeout ensures timely termination of the service (otherwise the service can remain hanging indefinitely).
