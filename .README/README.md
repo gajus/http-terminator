@@ -85,3 +85,18 @@ const httpTerminator = createHttpTerminator({
 await httpTerminator.terminate();
 
 ```
+
+## Alternative libraries
+
+There are several alternative libraries that implement comparable functionality, e.g.
+
+* https://github.com/hunterloftis/stoppable
+* https://github.com/thedillonb/http-shutdown
+* https://github.com/tellnes/http-close
+
+The main benefit of http-terminator is that:
+
+* it does not monkey-patch Node.js API
+* it immediately destroys all sockets without an attached HTTP request
+* it allows graceful timeout to sockets with ongoing HTTP requests
+* it informs connections using keep-alive that server is shutting down by setting a `connection: close` header
