@@ -7,7 +7,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-Terminates HTTP server.
+Gracefully terminates HTTP(S) server.
 
 * [http-terminator 🦾](#http-terminator)
     * [Behaviour](#http-terminator-behaviour)
@@ -111,4 +111,5 @@ The main benefit of http-terminator is that:
 * it does not monkey-patch Node.js API
 * it immediately destroys all sockets without an attached HTTP request
 * it allows graceful timeout to sockets with ongoing HTTP requests
+* it properly handles HTTPS connections
 * it informs connections using keep-alive that server is shutting down by setting a `connection: close` header
