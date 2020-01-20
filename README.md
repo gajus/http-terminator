@@ -105,6 +105,7 @@ There are several alternative libraries that implement comparable functionality,
 * https://github.com/hunterloftis/stoppable
 * https://github.com/thedillonb/http-shutdown
 * https://github.com/tellnes/http-close
+* https://github.com/sebhildebrandt/http-graceful-shutdown
 
 The main benefit of http-terminator is that:
 
