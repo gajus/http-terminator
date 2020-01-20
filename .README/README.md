@@ -110,6 +110,10 @@ await httpTerminator.terminate();
 
 ```
 
+### Usage with other HTTP frameworks
+
+As it should be clear from the usage examples for Node.js HTTP server, Express and Koa, http-terminator works by accessing an instance of a Node.js [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server). To understand how to use http-terminator with your framework, identify how to access an instance of `http.Server` and use it to create a http-terminator instance.
+
 ## Alternative libraries
 
 There are several alternative libraries that implement comparable functionality, e.g.

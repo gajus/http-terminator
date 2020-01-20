@@ -15,6 +15,7 @@ Gracefully terminates HTTP(S) server.
     * [Usage](#http-terminator-usage)
         * [Usage with Express](#http-terminator-usage-usage-with-express)
         * [Usage with Koa](#http-terminator-usage-usage-with-koa)
+        * [Usage with other HTTP frameworks](#http-terminator-usage-usage-with-other-http-frameworks)
     * [Alternative libraries](#http-terminator-alternative-libraries)
 
 
@@ -122,6 +123,11 @@ const httpTerminator = createHttpTerminator({
 await httpTerminator.terminate();
 
 ```
+
+<a name="http-terminator-usage-usage-with-other-http-frameworks"></a>
+### Usage with other HTTP frameworks
+
+As it should be clear from the usage examples for Node.js HTTP server, Express and Koa, http-terminator works by accessing an instance of a Node.js [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server). To understand how to use http-terminator with your framework, identify how to access an instance of `http.Server` and use it to create a http-terminator instance.
 
 <a name="http-terminator-alternative-libraries"></a>
 ## Alternative libraries
