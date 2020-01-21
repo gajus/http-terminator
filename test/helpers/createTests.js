@@ -35,7 +35,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.false(httpServer.server.listening);
   });
 
-  test('terminates hanging sockets after httpResponseTimeout', async (t) => {
+  test('terminates hanging sockets after gracefulTerminationTimeout', async (t) => {
     const spy = sinon.spy();
 
     const httpServer = await createHttpServer(() => {
@@ -46,7 +46,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.timeout(500);
 
     const terminator = createHttpTerminator({
-      httpResponseTimeout: 150,
+      gracefulTerminationTimeout: 150,
       server: httpServer.server,
     });
 
@@ -91,7 +91,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.timeout(500);
 
     const terminator = createHttpTerminator({
-      httpResponseTimeout: 150,
+      gracefulTerminationTimeout: 150,
       server: httpServer.server,
     });
 
@@ -130,7 +130,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.timeout(600);
 
     const terminator = createHttpTerminator({
-      httpResponseTimeout: 150,
+      gracefulTerminationTimeout: 150,
       server: httpServer.server,
     });
 
@@ -190,7 +190,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.timeout(1000);
 
     const terminator = createHttpTerminator({
-      httpResponseTimeout: 150,
+      gracefulTerminationTimeout: 150,
       server: httpServer.server,
     });
 

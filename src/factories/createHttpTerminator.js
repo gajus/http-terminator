@@ -13,7 +13,7 @@ const log = Logger.child({
 });
 
 const configurationDefaults = {
-  httpResponseTimeout: 1000,
+  gracefulTerminationTimeout: 1000,
 };
 
 export default (configurationInput: HttpTerminatorConfigurationInputType): HttpTerminatorType => {
@@ -119,7 +119,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     }
 
     if (sockets.size) {
-      await delay(configuration.httpResponseTimeout);
+      await delay(configuration.gracefulTerminationTimeout);
 
       for (const socket of sockets) {
         destroySocket(socket);

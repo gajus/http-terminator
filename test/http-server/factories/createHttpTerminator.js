@@ -36,7 +36,7 @@ test('terminates hanging sockets after httpResponseTimeout', async (t) => {
   });
 
   const terminator = createHttpTerminator({
-    httpResponseTimeout: 150,
+    gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
 
@@ -69,7 +69,7 @@ test('server stops accepting new connections after terminator.terminate() is cal
   });
 
   const terminator = createHttpTerminator({
-    httpResponseTimeout: 150,
+    gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
 
@@ -107,7 +107,7 @@ test('ongoing requests receive {connection: close} header', async (t) => {
   });
 
   const terminator = createHttpTerminator({
-    httpResponseTimeout: 150,
+    gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
 
@@ -158,7 +158,7 @@ test('ongoing requests receive {connection: close} header (new request reusing a
   const httpServer = await createHttpServer(stub);
 
   const terminator = createHttpTerminator({
-    httpResponseTimeout: 150,
+    gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
 

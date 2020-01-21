@@ -8,11 +8,11 @@ import type {
 } from 'https';
 
 /**
- * @property httpResponseTimeout Number of milliseconds to allow for the active sockets to complete serving the response (default: 1000).
+ * @property gracefulTerminationTimeout Number of milliseconds to allow for the active sockets to complete serving the response (default: 5000).
  * @property server Instance of http.Server.
  */
 export type HttpTerminatorConfigurationInputType = {|
-  +httpResponseTimeout?: number,
+  +gracefulTerminationTimeout?: number,
   +server: HttpServer | HttpsServer,
 |};
 
