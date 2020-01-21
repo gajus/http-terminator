@@ -69,11 +69,23 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
   });
 
   test('server stops accepting new connections after terminator.terminate() is called', async (t) => {
-    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
-      setTimeout(() => {
-        outgoingMessage.end('foo');
-      }, 100);
-    });
+    const stub = sinon.stub();
+
+    stub
+      .onCall(0)
+      .callsFake((incomingMessage, outgoingMessage) => {
+        setTimeout(() => {
+          outgoingMessage.end('foo');
+        }, 100);
+      });
+
+    stub
+      .onCall(1)
+      .callsFake((incomingMessage, outgoingMessage) => {
+        outgoingMessage.end('bar');
+      });
+
+    const httpServer = await createHttpServer(stub);
 
     // eslint-disable-next-line ava/use-t-well
     t.timeout(500);
@@ -98,6 +110,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
       },
     });
 
+    // @todo https://stackoverflow.com/q/59832897/368691
     await t.throwsAsync(request1);
 
     const response0 = await request0;

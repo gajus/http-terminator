@@ -27,23 +27,31 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
   const sockets = new Set();
   const secureSockets = new Set();
 
-  server.on('connection', (socket) => {
-    sockets.add(socket);
+  let terminating;
 
-    server.once('close', () => {
-      sockets.delete(socket);
-    });
+  server.on('connection', (socket) => {
+    if (terminating) {
+      socket.destroy();
+    } else {
+      sockets.add(socket);
+
+      server.once('close', () => {
+        sockets.delete(socket);
+      });
+    }
   });
 
   server.on('secureConnection', (socket) => {
-    secureSockets.add(socket);
+    if (terminating) {
+      socket.destroy();
+    } else {
+      secureSockets.add(socket);
 
-    server.once('close', () => {
-      secureSockets.delete(socket);
-    });
+      server.once('close', () => {
+        secureSockets.delete(socket);
+      });
+    }
   });
-
-  let terminating;
 
   /**
    * Evaluate whether additional steps are required to destroy the socket.
