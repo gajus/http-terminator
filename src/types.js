@@ -1,5 +1,8 @@
 // @flow
 
+import {
+  Socket,
+} from 'net';
 import type {
   Server as HttpServer,
 } from 'http';
@@ -21,4 +24,10 @@ export type HttpTerminatorConfigurationInputType = {|
  */
 export type HttpTerminatorType = {|
   +terminate: () => Promise<void>,
+|};
+
+export type InternalHttpTerminatorType = {|
+  ...HttpTerminatorType,
+  secureSockets: Set<Socket>,
+  sockets: Set<Socket>,
 |};

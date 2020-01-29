@@ -197,3 +197,26 @@ test('ongoing requests receive {connection: close} header (new request reusing a
   t.is(response1.headers.connection, 'close');
   t.is(response1.body, 'baz');
 });
+
+test('empties internal socket collection', async (t) => {
+  // eslint-disable-next-line ava/use-t-well
+  t.timeout(500);
+
+  const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+    outgoingMessage.end('foo');
+  });
+
+  const terminator = createInternalHttpTerminator({
+    gracefulTerminationTimeout: 150,
+    server: httpServer.server,
+  });
+
+  await got(httpServer.url);
+
+  await delay(50);
+
+  t.is(terminator.sockets.size, 0);
+  t.is(terminator.secureSockets.size, 0);
+
+  await terminator.terminate();
+});

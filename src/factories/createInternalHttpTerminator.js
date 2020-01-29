@@ -3,8 +3,8 @@
 import http from 'http';
 import delay from 'delay';
 import type {
-  HttpTerminatorType,
   HttpTerminatorConfigurationInputType,
+  InternalHttpTerminatorType,
 } from '../types';
 import Logger from '../Logger';
 
@@ -16,7 +16,7 @@ const configurationDefaults = {
   gracefulTerminationTimeout: 1000,
 };
 
-export default (configurationInput: HttpTerminatorConfigurationInputType): HttpTerminatorType => {
+export default (configurationInput: HttpTerminatorConfigurationInputType): InternalHttpTerminatorType => {
   const configuration = {
     ...configurationDefaults,
     ...configurationInput,
@@ -91,6 +91,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
         continue;
       }
 
+      // $FlowFixMe
       const serverResponse = socket._httpMessage;
 
       if (serverResponse) {
@@ -105,6 +106,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     }
 
     for (const socket of secureSockets) {
+      // $FlowFixMe
       const serverResponse = socket._httpMessage;
 
       if (serverResponse) {
@@ -138,6 +140,8 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
   };
 
   return {
+    secureSockets,
+    sockets,
     terminate,
   };
 };
