@@ -6,7 +6,7 @@ import delay from 'delay';
 import got from 'got';
 import KeepAliveHttpAgent from 'agentkeepalive';
 import createHttpServer from '../../helpers/createHttpServer';
-import createHttpTerminator from '../../../src/factories/createHttpTerminator';
+import createInternalHttpTerminator from '../../../src/factories/createInternalHttpTerminator';
 
 test('terminates HTTP server with no connections', async (t) => {
   // eslint-disable-next-line ava/use-t-well
@@ -16,7 +16,7 @@ test('terminates HTTP server with no connections', async (t) => {
 
   t.true(httpServer.server.listening);
 
-  const terminator = createHttpTerminator({
+  const terminator = createInternalHttpTerminator({
     server: httpServer.server,
   });
 
@@ -35,7 +35,7 @@ test('terminates hanging sockets after httpResponseTimeout', async (t) => {
     spy();
   });
 
-  const terminator = createHttpTerminator({
+  const terminator = createInternalHttpTerminator({
     gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
@@ -68,7 +68,7 @@ test('server stops accepting new connections after terminator.terminate() is cal
     }, 100);
   });
 
-  const terminator = createHttpTerminator({
+  const terminator = createInternalHttpTerminator({
     gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
@@ -106,7 +106,7 @@ test('ongoing requests receive {connection: close} header', async (t) => {
     }, 100);
   });
 
-  const terminator = createHttpTerminator({
+  const terminator = createInternalHttpTerminator({
     gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
@@ -157,7 +157,7 @@ test('ongoing requests receive {connection: close} header (new request reusing a
 
   const httpServer = await createHttpServer(stub);
 
-  const terminator = createHttpTerminator({
+  const terminator = createInternalHttpTerminator({
     gracefulTerminationTimeout: 150,
     server: httpServer.server,
   });
