@@ -35,7 +35,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     } else {
       sockets.add(socket);
 
-      server.once('close', () => {
+      socket.once('close', () => {
         sockets.delete(socket);
       });
     }
@@ -47,7 +47,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): HttpT
     } else {
       secureSockets.add(socket);
 
-      server.once('close', () => {
+      socket.once('close', () => {
         secureSockets.delete(socket);
       });
     }
