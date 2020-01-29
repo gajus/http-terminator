@@ -5,17 +5,16 @@
     "url": "http://gajus.com"
   },
   "ava": {
+    "babel": {
+      "compileAsTests": [
+        "test/helpers/**/*"
+      ]
+    },
     "files": [
-      "test/**/*"
-    ],
-    "helpers": [
-      "test/helpers/**/*"
+      "test/http-terminator/**/*"
     ],
     "require": [
       "@babel/register"
-    ],
-    "sources": [
-      "src/**/*"
     ]
   },
   "dependencies": {
@@ -24,6 +23,7 @@
   },
   "description": "Gracefully terminates HTTP(S) server.",
   "devDependencies": {
+    "@ava/babel": "^1.0.0",
     "@babel/cli": "^7.8.3",
     "@babel/core": "^7.8.3",
     "@babel/node": "^7.8.3",
@@ -31,7 +31,7 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/register": "^7.8.3",
     "agentkeepalive": "^4.1.0",
-    "ava": "^2.4.0",
+    "ava": "^3.0.0",
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.9",
