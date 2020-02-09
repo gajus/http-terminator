@@ -61,6 +61,7 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "name": "http-terminator",
   "nyc": {
     "all": true,
@@ -83,7 +84,7 @@
     "url": "https://github.com/gajus/http-terminator"
   },
   "scripts": {
-    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist && cp -r types/* dist/",
     "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
     "test": "NODE_ENV=test ava --verbose --serial"
