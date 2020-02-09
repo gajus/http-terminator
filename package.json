@@ -87,6 +87,7 @@
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist && cp -r types/* dist/",
     "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
+    "prepare": "npm run build",
     "test": "NODE_ENV=test ava --verbose --serial"
   },
   "version": "1.0.0"
