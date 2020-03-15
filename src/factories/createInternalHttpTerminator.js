@@ -121,7 +121,9 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
     }
 
     if (sockets.size) {
-      await delay(configuration.gracefulTerminationTimeout);
+      if (configuration.gracefulTerminationTimeout) {
+        await delay(configuration.gracefulTerminationTimeout);
+      }
 
       for (const socket of sockets) {
         destroySocket(socket);
