@@ -8,5 +8,5 @@ import createInternalHttpTerminator from './createInternalHttpTerminator';
 
 export default (configurationInput: HttpTerminatorConfigurationInputType): HttpTerminatorType => {
   const httpTerminator = createInternalHttpTerminator(configurationInput);
-  return terminate
+  return terminate;
 };
