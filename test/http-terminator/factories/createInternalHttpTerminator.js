@@ -7,6 +7,7 @@ import got from 'got';
 import KeepAliveHttpAgent from 'agentkeepalive';
 import createHttpServer from '../../helpers/createHttpServer';
 import createInternalHttpTerminator from '../../../src/factories/createInternalHttpTerminator';
+import createHttpsServer from '../../helpers/createHttpsServer';
 
 test('terminates HTTP server with no connections', async (t) => {
   // eslint-disable-next-line ava/use-t-well
@@ -216,6 +217,28 @@ test('empties internal socket collection', async (t) => {
   await delay(50);
 
   t.is(terminator.sockets.size, 0);
+  t.is(terminator.secureSockets.size, 0);
+
+  await terminator.terminate();
+});
+
+test('empties internal socket collection for https server', async (t) => {
+  // eslint-disable-next-line ava/use-t-well
+  t.timeout(500);
+
+  const httpsServer = await createHttpsServer((incomingMessage, outgoingMessage) => {
+    outgoingMessage.end('foo');
+  });
+
+  const terminator = createInternalHttpTerminator({
+    gracefulTerminationTimeout: 150,
+    server: httpsServer.server,
+  });
+
+  await got(httpsServer.url);
+
+  await delay(50);
+
   t.is(terminator.secureSockets.size, 0);
 
   await terminator.terminate();

@@ -61,7 +61,11 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
   const destroySocket = (socket) => {
     socket.destroy();
 
-    sockets.delete(socket);
+    if (socket.server instanceof http.Server) {
+      sockets.delete(socket);
+    } else {
+      secureSockets.delete(socket);
+    }
   };
 
   const terminate = async () => {
@@ -124,6 +128,14 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
       await delay(configuration.gracefulTerminationTimeout);
 
       for (const socket of sockets) {
+        destroySocket(socket);
+      }
+    }
+
+    if (secureSockets.size) {
+      await delay(configuration.gracefulTerminationTimeout);
+
+      for (const socket of secureSockets) {
         destroySocket(socket);
       }
     }
