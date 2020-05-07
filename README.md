@@ -93,10 +93,10 @@ import {
 
 const app = express();
 
-const server = app.listen();
+const httpserver = app.listen();
 
 const httpTerminator = createHttpTerminator({
-  server,
+  server: httpserver,
 });
 
 await httpTerminator.terminate();
