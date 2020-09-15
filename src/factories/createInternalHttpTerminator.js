@@ -59,6 +59,16 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
    * @see https://github.com/nodejs/node/blob/57bd715d527aba8dae56b975056961b0e429e91e/lib/_http_client.js#L363-L413
    */
   const destroySocket = (socket) => {
+    const serverResponse = socket._httpMessage;
+
+    if (serverResponse) {
+      if (!serverResponse.headersSent) {
+        serverResponse.setHeader('connection', 'close');
+      }
+
+      serverResponse.end();
+    }
+
     socket.destroy();
 
     if (socket.server instanceof http.Server) {
@@ -89,55 +99,35 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
       }
     });
 
+    let checkerInterval;
+    await Promise.race([
+      new Promise((resolve) => {
+        checkerInterval = setInterval(() => {
+          const everyoneClosed = sockets.size === 0 && secureSockets.size === 0;
+          if (everyoneClosed) {
+            clearInterval(checkerInterval);
+            checkerInterval = null;
+            resolve();
+          }
+        }, 20);
+      }),
+      delay(configuration.gracefulTerminationTimeout),
+    ]);
+
+    if (checkerInterval) {
+      clearInterval(checkerInterval);
+    }
+
     for (const socket of sockets) {
       // This is the HTTP CONNECT request socket.
       if (!(socket.server instanceof http.Server)) {
         continue;
       }
-
-      // $FlowFixMe
-      const serverResponse = socket._httpMessage;
-
-      if (serverResponse) {
-        if (!serverResponse.headersSent) {
-          serverResponse.setHeader('connection', 'close');
-        }
-
-        continue;
-      }
-
       destroySocket(socket);
     }
 
     for (const socket of secureSockets) {
-      // $FlowFixMe
-      const serverResponse = socket._httpMessage;
-
-      if (serverResponse) {
-        if (!serverResponse.headersSent) {
-          serverResponse.setHeader('connection', 'close');
-        }
-
-        continue;
-      }
-
       destroySocket(socket);
-    }
-
-    if (sockets.size) {
-      await delay(configuration.gracefulTerminationTimeout);
-
-      for (const socket of sockets) {
-        destroySocket(socket);
-      }
-    }
-
-    if (secureSockets.size) {
-      await delay(configuration.gracefulTerminationTimeout);
-
-      for (const socket of secureSockets) {
-        destroySocket(socket);
-      }
     }
 
     server.close((error) => {

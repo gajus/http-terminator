@@ -267,4 +267,60 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
 
     t.is(response.headers.connection, 'keep-alive');
   });
+
+  test('terminates at gracefulTerminationTimeout if sockets do not close in time', async (t) => {
+    const spy = sinon.spy();
+
+    const httpServer = await createHttpServer(() => {
+      spy();
+    });
+
+    // eslint-disable-next-line ava/use-t-well
+    t.timeout(1000);
+
+    const terminator = createHttpTerminator({
+      gracefulTerminationTimeout: 500,
+      server: httpServer.server,
+    });
+
+    got(httpServer.url);
+
+    await delay(50);
+
+    t.true(spy.called);
+    t.is(await httpServer.getConnections(), 1);
+
+    await terminator.terminate();
+    t.is(await httpServer.getConnections(), 0);
+  });
+
+  test('terminates as soon as all sockets close by themselves', async (t) => {
+    const spy = sinon.spy();
+
+    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+      setTimeout(() => {
+        spy();
+        outgoingMessage.end('foo');
+      }, 500);
+    });
+
+    // eslint-disable-next-line ava/use-t-well
+    t.timeout(750);
+
+    const terminator = createHttpTerminator({
+      gracefulTerminationTimeout: 1000,
+      server: httpServer.server,
+    });
+
+    got(httpServer.url);
+
+    await delay(50);
+
+    t.false(spy.called);
+    t.is(await httpServer.getConnections(), 1);
+    await delay(600);
+    t.true(spy.called);
+    t.is(await httpServer.getConnections(), 0);
+    await terminator.terminate();
+  });
 };
