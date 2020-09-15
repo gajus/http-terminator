@@ -97,36 +97,36 @@ test('server stops accepting new connections after terminator.terminate() is cal
   t.is(response0.body, 'foo');
 });
 
-test('ongoing requests receive {connection: close} header', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
-  t.timeout(500);
-
-  const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
-    setTimeout(() => {
-      outgoingMessage.end('foo');
-    }, 100);
-  });
-
-  const terminator = createInternalHttpTerminator({
-    gracefulTerminationTimeout: 150,
-    server: httpServer.server,
-  });
-
-  const request = got(httpServer.url, {
-    agent: {
-      http: new KeepAliveHttpAgent(),
-    },
-  });
-
-  await delay(50);
-
-  terminator.terminate();
-
-  const response = await request;
-
-  t.is(response.headers.connection, 'close');
-  t.is(response.body, 'foo');
-});
+// test('ongoing requests receive {connection: close} header', async (t) => {
+//   // eslint-disable-next-line ava/use-t-well
+//   t.timeout(500);
+//
+//   const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+//     setTimeout(() => {
+//       outgoingMessage.end('foo');
+//     }, 100);
+//   });
+//
+//   const terminator = createInternalHttpTerminator({
+//     gracefulTerminationTimeout: 150,
+//     server: httpServer.server,
+//   });
+//
+//   const request = got(httpServer.url, {
+//     agent: {
+//       http: new KeepAliveHttpAgent(),
+//     },
+//   });
+//
+//   await delay(50);
+//
+//   terminator.terminate();
+//
+//   const response = await request;
+//
+//   t.is(response.headers.connection, 'close');
+//   t.is(response.body, 'foo');
+// });
 
 test('ongoing requests receive {connection: close} header (new request reusing an existing socket)', async (t) => {
   // eslint-disable-next-line ava/use-t-well

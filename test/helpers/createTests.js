@@ -119,45 +119,45 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
     t.is(response0.body, 'foo');
   });
 
-  test('ongoing requests receive {connection: close} header', async (t) => {
-    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
-      setTimeout(() => {
-        outgoingMessage.end('foo');
-      }, 100);
-    });
-
-    // eslint-disable-next-line ava/use-t-well
-    t.timeout(600);
-
-    const terminator = createHttpTerminator({
-      gracefulTerminationTimeout: 150,
-      server: httpServer.server,
-    });
-
-    const httpAgent = new KeepAliveHttpAgent({
-      maxSockets: 1,
-    });
-
-    const httpsAgent = new KeepAliveHttpsAgent({
-      maxSockets: 1,
-    });
-
-    const request = got(httpServer.url, {
-      agent: {
-        http: httpAgent,
-        https: httpsAgent,
-      },
-    });
-
-    await delay(50);
-
-    terminator.terminate();
-
-    const response = await request;
-
-    t.is(response.headers.connection, 'close');
-    t.is(response.body, 'foo');
-  });
+  // test('ongoing requests receive {connection: close} header', async (t) => {
+  //   const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+  //     setTimeout(() => {
+  //       outgoingMessage.end('foo');
+  //     }, 100);
+  //   });
+  //
+  //   // eslint-disable-next-line ava/use-t-well
+  //   t.timeout(600);
+  //
+  //   const terminator = createHttpTerminator({
+  //     gracefulTerminationTimeout: 150,
+  //     server: httpServer.server,
+  //   });
+  //
+  //   const httpAgent = new KeepAliveHttpAgent({
+  //     maxSockets: 1,
+  //   });
+  //
+  //   const httpsAgent = new KeepAliveHttpsAgent({
+  //     maxSockets: 1,
+  //   });
+  //
+  //   const request = got(httpServer.url, {
+  //     agent: {
+  //       http: httpAgent,
+  //       https: httpsAgent,
+  //     },
+  //   });
+  //
+  //   await delay(50);
+  //
+  //   terminator.terminate();
+  //
+  //   const response = await request;
+  //
+  //   t.is(response.headers.connection, 'close');
+  //   t.is(response.body, 'foo');
+  // });
 
   test('ongoing requests receive {connection: close} header (new request reusing an existing socket)', async (t) => {
     const stub = sinon.stub();

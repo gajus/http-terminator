@@ -59,8 +59,10 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
    * @see https://github.com/nodejs/node/blob/57bd715d527aba8dae56b975056961b0e429e91e/lib/_http_client.js#L363-L413
    */
   const destroySocket = (socket) => {
+    // $FlowFixMe
     const serverResponse = socket._httpMessage;
 
+    // If there is an open HTTP connection on this socket, close it.
     if (serverResponse) {
       if (!serverResponse.headersSent) {
         serverResponse.setHeader('connection', 'close');
@@ -100,6 +102,11 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
     });
 
     let checkerInterval;
+
+    /**
+     * Allow the server to finish processing all open requests within gracefulTerminationTimeout
+     * If it goes over that time, we will forcefully end all connections.
+     */
     await Promise.race([
       new Promise((resolve) => {
         checkerInterval = setInterval(() => {
@@ -111,6 +118,8 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
           }
         }, 20);
       }),
+
+      // Maximum waiting period is gracefulTerminationTimeout before we move on to close all sockets ourselves
       delay(configuration.gracefulTerminationTimeout),
     ]);
 
