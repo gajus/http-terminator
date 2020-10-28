@@ -136,6 +136,7 @@ As it should be clear from the usage examples for Node.js HTTP server, Express a
 
 There are several alternative libraries that implement comparable functionality, e.g.
 
+* https://github.com/gquittet/graceful-server
 * https://github.com/hunterloftis/stoppable
 * https://github.com/thedillonb/http-shutdown
 * https://github.com/tellnes/http-close
