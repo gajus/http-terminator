@@ -5,6 +5,7 @@ import safeGot from 'got';
 import sinon from 'sinon';
 import createInternalHttpTerminator from '../../../src/factories/createInternalHttpTerminator';
 import createHttpServer from '../../helpers/createHttpServer';
+import createHttpsServer from '../../helpers/createHttpsServer';
 
 const got = safeGot.extend({
   https: {
@@ -215,6 +216,27 @@ test('empties internal socket collection', async (t) => {
   await delay(50);
 
   t.is(terminator.sockets.size, 0);
+  t.is(terminator.secureSockets.size, 0);
+
+  await terminator.terminate();
+});
+
+test('empties internal socket collection for https server', async (t) => {
+  t.timeout(500);
+
+  const httpsServer = await createHttpsServer((incomingMessage, outgoingMessage) => {
+    outgoingMessage.end('foo');
+  });
+
+  const terminator = createInternalHttpTerminator({
+    gracefulTerminationTimeout: 150,
+    server: httpsServer.server,
+  });
+
+  await got(httpsServer.url);
+
+  await delay(50);
+
   t.is(terminator.secureSockets.size, 0);
 
   await terminator.terminate();
