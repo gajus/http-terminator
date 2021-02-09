@@ -1,22 +1,28 @@
-// @flow
-
 import http from 'http';
-import delay from 'delay';
 import type {
-  HttpTerminatorConfigurationInputType,
-  InternalHttpTerminatorType,
-} from '../types';
+  Socket,
+} from 'net';
+import type {
+  TLSSocket,
+} from 'tls';
+import delay from 'delay';
 import Logger from '../Logger';
+import type {
+  HttpTerminatorConfigurationInput,
+  InternalHttpTerminator,
+} from '../types';
 
 const log = Logger.child({
   namespace: 'createHttpTerminator',
 });
 
 const configurationDefaults = {
-  gracefulTerminationTimeout: 1000,
+  gracefulTerminationTimeout: 1_000,
 };
 
-export default (configurationInput: HttpTerminatorConfigurationInputType): InternalHttpTerminatorType => {
+export default (
+  configurationInput: HttpTerminatorConfigurationInput,
+): InternalHttpTerminator => {
   const configuration = {
     ...configurationDefaults,
     ...configurationInput,
@@ -24,8 +30,8 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
 
   const server = configuration.server;
 
-  const sockets = new Set();
-  const secureSockets = new Set();
+  const sockets = new Set<Socket>();
+  const secureSockets = new Set<TLSSocket>();
 
   let terminating;
 
@@ -87,11 +93,12 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
 
     for (const socket of sockets) {
       // This is the HTTP CONNECT request socket.
+      // @ts-expect-error Unclear if I am using wrong type or how else this should be handled.
       if (!(socket.server instanceof http.Server)) {
         continue;
       }
 
-      // $FlowFixMe
+      // @ts-expect-error Unclear if I am using wrong type or how else this should be handled.
       const serverResponse = socket._httpMessage;
 
       if (serverResponse) {
@@ -106,7 +113,7 @@ export default (configurationInput: HttpTerminatorConfigurationInputType): Inter
     }
 
     for (const socket of secureSockets) {
-      // $FlowFixMe
+      // @ts-expect-error Unclear if I am using wrong type or how else this should be handled.
       const serverResponse = socket._httpMessage;
 
       if (serverResponse) {

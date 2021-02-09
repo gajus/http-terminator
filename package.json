@@ -5,47 +5,40 @@
     "url": "http://gajus.com"
   },
   "ava": {
-    "babel": {
-      "compileAsTests": [
-        "test/helpers/**/*"
-      ]
-    },
+    "extensions": [
+      "ts"
+    ],
     "files": [
       "test/http-terminator/**/*"
     ],
     "require": [
-      "@babel/register"
+      "ts-node/register/transpile-only"
     ]
   },
   "dependencies": {
-    "delay": "^4.3.0",
-    "roarr": "^2.14.6"
+    "delay": "^5.0.0",
+    "roarr": "^4.0.8",
+    "type-fest": "^0.20.2"
   },
   "description": "Gracefully terminates HTTP(S) server.",
   "devDependencies": {
-    "@ava/babel": "^1.0.0",
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
-    "@babel/node": "^7.8.3",
-    "@babel/plugin-transform-flow-strip-types": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
-    "@babel/register": "^7.8.3",
-    "agentkeepalive": "^4.1.0",
-    "ava": "^3.0.0",
+    "agentkeepalive": "^4.1.4",
+    "ava": "^3.15.0",
     "babel-plugin-istanbul": "^6.0.0",
-    "babel-plugin-transform-export-default-name": "^2.0.4",
-    "coveralls": "^3.0.9",
-    "eslint": "^6.8.0",
-    "eslint-config-canonical": "^18.1.0",
-    "flow-bin": "^0.116.1",
-    "flow-copy-source": "^2.0.9",
-    "gitdown": "^3.1.2",
-    "got": "^10.2.2",
-    "husky": "^4.0.10",
-    "nyc": "^15.0.0",
-    "pem": "^1.14.3",
-    "semantic-release": "^16.0.2",
-    "sinon": "^8.1.0"
+    "babel-plugin-transform-export-default-name": "^2.1.0",
+    "coveralls": "^3.1.0",
+    "del-cli": "^3.0.1",
+    "eslint": "^7.19.0",
+    "eslint-config-canonical": "^25.8.15",
+    "gitdown": "^3.1.3",
+    "got": "^11.8.1",
+    "husky": "^4.0.0",
+    "nyc": "^15.1.0",
+    "pem": "^1.14.4",
+    "semantic-release": "^17.3.8",
+    "sinon": "^9.2.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
   },
   "engines": {
     "node": ">=10"
@@ -60,33 +53,18 @@
     "prometheus"
   ],
   "license": "BSD-3-Clause",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "name": "http-terminator",
-  "nyc": {
-    "all": true,
-    "include": [
-      "src/**/*.js"
-    ],
-    "instrument": false,
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "require": [
-      "@babel/register"
-    ],
-    "silent": true,
-    "sourceMap": false
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/http-terminator"
   },
   "scripts": {
-    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
+    "build": "del-cli ./dist && tsc",
     "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint ./src ./test && flow",
-    "test": "NODE_ENV=test ava --verbose --serial"
+    "lint": "eslint ./src ./test && tsc --noEmit",
+    "test": "NODE_ENV=test ava --serial --verbose"
   },
+  "typings": "./dist/src/index.d.ts",
   "version": "1.0.0"
 }

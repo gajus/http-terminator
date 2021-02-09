@@ -1,17 +1,21 @@
-// @flow
-
-import test from 'ava';
-import sinon from 'sinon';
-import delay from 'delay';
-import got from 'got';
 import KeepAliveHttpAgent from 'agentkeepalive';
-import createHttpServer from '../../helpers/createHttpServer';
+import test from 'ava';
+import delay from 'delay';
+import safeGot from 'got';
+import sinon from 'sinon';
 import createInternalHttpTerminator from '../../../src/factories/createInternalHttpTerminator';
+import createHttpServer from '../../helpers/createHttpServer';
+
+const got = safeGot.extend({
+  https: {
+    rejectUnauthorized: false,
+  },
+});
 
 test('terminates HTTP server with no connections', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
   t.timeout(100);
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const httpServer = await createHttpServer(() => {});
 
   t.true(httpServer.server.listening);
@@ -26,7 +30,6 @@ test('terminates HTTP server with no connections', async (t) => {
 });
 
 test('terminates hanging sockets after httpResponseTimeout', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
   t.timeout(500);
 
   const spy = sinon.spy();
@@ -59,7 +62,6 @@ test('terminates hanging sockets after httpResponseTimeout', async (t) => {
 });
 
 test('server stops accepting new connections after terminator.terminate() is called', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
   t.timeout(500);
 
   const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
@@ -97,7 +99,6 @@ test('server stops accepting new connections after terminator.terminate() is cal
 });
 
 test('ongoing requests receive {connection: close} header', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
   t.timeout(500);
 
   const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
@@ -128,8 +129,7 @@ test('ongoing requests receive {connection: close} header', async (t) => {
 });
 
 test('ongoing requests receive {connection: close} header (new request reusing an existing socket)', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
-  t.timeout(1000);
+  t.timeout(1_000);
 
   const stub = sinon.stub();
 
@@ -199,7 +199,6 @@ test('ongoing requests receive {connection: close} header (new request reusing a
 });
 
 test('empties internal socket collection', async (t) => {
-  // eslint-disable-next-line ava/use-t-well
   t.timeout(500);
 
   const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {

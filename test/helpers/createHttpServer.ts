@@ -1,28 +1,30 @@
-// @flow
-
-import {
-  createServer,
+import type {
   Server,
   IncomingMessage as HttpIncomingMessage,
   ServerResponse as HttpServerResponse,
 } from 'http';
 import {
+  createServer,
+} from 'http';
+import {
   promisify,
 } from 'util';
 
-type RequestHandlerType = (incomingMessage: HttpIncomingMessage, outgoingMessage: HttpServerResponse) => void;
+type RequestHandler = (incomingMessage: HttpIncomingMessage, outgoingMessage: HttpServerResponse) => void;
 
-type HttpServerType = {|
-  +getConnections: () => Promise<number>,
-  +port: number,
-  +server: Server,
-  +stop: () => Promise<void>,
-  +url: string,
-|};
+type HttpServerType = {
+  readonly getConnections: () => Promise<number>,
+  readonly port: number,
+  readonly server: Server,
+  readonly stop: () => Promise<void>,
+  readonly url: string,
+};
 
-export type HttpServerFactoryType = (requestHandler: RequestHandlerType) => Promise<HttpServerType>;
+export type HttpServerFactory = (requestHandler: RequestHandler) => Promise<HttpServerType>;
 
-export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => {
+export default (
+  requestHandler: RequestHandler,
+): Promise<HttpServerType> => {
   const server = createServer(requestHandler);
 
   let serverShutingDown;
@@ -45,6 +47,7 @@ export default (requestHandler: RequestHandlerType): Promise<HttpServerType> => 
     server.once('error', reject);
 
     server.listen(() => {
+      // @ts-expect-error-error address should be always available inside the `.listen()` block.
       const port = server.address().port;
       const url = 'http://localhost:' + port;
 

@@ -1,27 +1,33 @@
-// @flow
-
 /* eslint-disable ava/no-ignored-test-files */
 
-import test from 'ava';
-import sinon from 'sinon';
-import delay from 'delay';
-import got from 'got';
 import KeepAliveHttpAgent from 'agentkeepalive';
+import test from 'ava';
+import delay from 'delay';
+import safeGot from 'got';
+import sinon from 'sinon';
 import createHttpTerminator from '../../src/factories/createHttpTerminator';
 import type {
-  HttpServerFactoryType,
+  HttpServerFactory,
 } from './createHttpServer';
 import type {
-  HttpsServerFactoryType,
+  HttpsServerFactory,
 } from './createHttpsServer';
+
+const got = safeGot.extend({
+  https: {
+    rejectUnauthorized: false,
+  },
+});
 
 const KeepAliveHttpsAgent = KeepAliveHttpAgent.HttpsAgent;
 
-export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType) => {
+export default (
+  createHttpServer: HttpServerFactory | HttpsServerFactory,
+): void => {
   test('terminates HTTP server with no connections', async (t) => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const httpServer = await createHttpServer(() => {});
 
-    // eslint-disable-next-line ava/use-t-well
     t.timeout(100);
 
     t.true(httpServer.server.listening);
@@ -42,7 +48,6 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
       spy();
     });
 
-    // eslint-disable-next-line ava/use-t-well
     t.timeout(500);
 
     const terminator = createHttpTerminator({
@@ -87,7 +92,6 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
 
     const httpServer = await createHttpServer(stub);
 
-    // eslint-disable-next-line ava/use-t-well
     t.timeout(500);
 
     const terminator = createHttpTerminator({
@@ -126,7 +130,6 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
       }, 100);
     });
 
-    // eslint-disable-next-line ava/use-t-well
     t.timeout(600);
 
     const terminator = createHttpTerminator({
@@ -186,8 +189,7 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
 
     const httpServer = await createHttpServer(stub);
 
-    // eslint-disable-next-line ava/use-t-well
-    t.timeout(1000);
+    t.timeout(1_000);
 
     const terminator = createHttpTerminator({
       gracefulTerminationTimeout: 150,
@@ -243,7 +245,6 @@ export default (createHttpServer: HttpServerFactoryType | HttpsServerFactoryType
       }, 50);
     });
 
-    // eslint-disable-next-line ava/use-t-well
     t.timeout(100);
 
     createHttpTerminator({

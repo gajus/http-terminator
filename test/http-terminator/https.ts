@@ -1,6 +1,4 @@
-// @flow
-
-import createTests from '../helpers/createTests';
 import createHttpsServer from '../helpers/createHttpsServer';
+import createTests from '../helpers/createTests';
 
 createTests(createHttpsServer);
