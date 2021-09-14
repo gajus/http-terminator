@@ -5,8 +5,8 @@ import type {
   Server as HttpsServer,
 } from 'https';
 import type {
-  Socket,
-} from 'net';
+  Duplex,
+} from 'node:stream';
 import type {
   Merge,
 } from 'type-fest';
@@ -28,6 +28,6 @@ export type HttpTerminator = {
 };
 
 export type InternalHttpTerminator = Merge<HttpTerminator, {
-  readonly secureSockets: Set<Socket>,
-  readonly sockets: Set<Socket>,
+  readonly secureSockets: Set<Duplex>,
+  readonly sockets: Set<Duplex>,
 }>;

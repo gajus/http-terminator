@@ -1,11 +1,10 @@
+/* eslint-disable import/order */
+
 import http from 'http';
-import type {
-  Socket,
-} from 'net';
-import type {
-  TLSSocket,
-} from 'tls';
 import delay from 'delay';
+import type {
+  Duplex,
+} from 'node:stream';
 import Logger from '../Logger';
 import type {
   HttpTerminatorConfigurationInput,
@@ -30,8 +29,8 @@ export default (
 
   const server = configuration.server;
 
-  const sockets = new Set<Socket>();
-  const secureSockets = new Set<TLSSocket>();
+  const sockets = new Set<Duplex>();
+  const secureSockets = new Set<Duplex>();
 
   let terminating;
 
