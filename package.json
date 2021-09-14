@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "delay": "^5.0.0",
-    "roarr": "^7.0.3",
-    "type-fest": "^2.0.0"
+    "roarr": "^7.0.4",
+    "type-fest": "^2.3.2"
   },
   "description": "Gracefully terminates HTTP(S) server.",
   "devDependencies": {
@@ -29,16 +29,16 @@
     "coveralls": "^3.1.1",
     "del-cli": "^4.0.1",
     "eslint": "^7.32.0",
-    "eslint-config-canonical": "^26.2.3",
+    "eslint-config-canonical": "^27.0.1",
     "gitdown": "^3.1.4",
     "got": "^11.8.2",
-    "husky": "^7.0.1",
+    "husky": "^7.0.2",
     "nyc": "^15.1.0",
     "pem": "^1.14.4",
-    "semantic-release": "^17.4.5",
+    "semantic-release": "^17.4.7",
     "sinon": "^11.1.2",
     "ts-node": "^10.2.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.3"
   },
   "engines": {
     "node": ">=10"
