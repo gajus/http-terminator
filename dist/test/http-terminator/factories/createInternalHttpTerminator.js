@@ -176,3 +176,26 @@ const got = got_1.default.extend({
     t.is(terminator.secureSockets.size, 0);
     await terminator.terminate();
 });
+(0, ava_1.default)('closes immediately after in-flight connections are closed (#16)', async (t) => {
+    t.timeout(1000);
+    const spy = sinon_1.default.spy((incomingMessage, outgoingMessage) => {
+        setTimeout(() => {
+            outgoingMessage.end('foo');
+        }, 100);
+    });
+    const httpServer = await (0, createHttpServer_1.default)(spy);
+    t.true(httpServer.server.listening);
+    const terminator = (0, createInternalHttpTerminator_1.default)({
+        gracefulTerminationTimeout: 500,
+        server: httpServer.server,
+    });
+    got(httpServer.url);
+    await (0, delay_1.default)(50);
+    t.is(await httpServer.getConnections(), 1);
+    terminator.terminate();
+    // Wait for outgoingMessage.end to be called, plus a few extra ms for the
+    // terminator to finish polling in-flight connections. (Do not, however, wait
+    // long enough to trigger graceful termination.)
+    await (0, delay_1.default)(75);
+    t.is(await httpServer.getConnections(), 0);
+});

@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
-const delay_1 = __importDefault(require("delay"));
+const p_wait_for_1 = __importDefault(require("p-wait-for"));
 const Logger_1 = __importDefault(require("../Logger"));
 const log = Logger_1.default.child({
     namespace: 'createHttpTerminator',
@@ -101,14 +101,23 @@ exports.default = (configurationInput) => {
             }
             destroySocket(socket);
         }
-        if (sockets.size) {
-            await (0, delay_1.default)(configuration.gracefulTerminationTimeout);
+        // Wait for all in-flight connections to drain, forcefully terminating any
+        // open connections after the given timeout
+        try {
+            await (0, p_wait_for_1.default)(() => {
+                return sockets.size === 0 && secureSockets.size === 0;
+            }, {
+                interval: 10,
+                timeout: configuration.gracefulTerminationTimeout,
+            });
+        }
+        catch (_a) {
+            // Ignore timeout errors
+        }
+        finally {
             for (const socket of sockets) {
                 destroySocket(socket);
             }
-        }
-        if (secureSockets.size) {
-            await (0, delay_1.default)(configuration.gracefulTerminationTimeout);
             for (const socket of secureSockets) {
                 destroySocket(socket);
             }

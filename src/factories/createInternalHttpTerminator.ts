@@ -136,7 +136,7 @@ export default (
       await waitFor(() => {
         return sockets.size === 0 && secureSockets.size === 0;
       }, {
-        interval: 1,
+        interval: 10,
         timeout: configuration.gracefulTerminationTimeout,
       });
     } catch {
