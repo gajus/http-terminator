@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 
 import http from 'http';
-import delay from 'delay';
+import waitFor from 'p-wait-for';
 import type {
   Duplex,
 } from 'node:stream';
@@ -130,16 +130,21 @@ export default (
       destroySocket(socket);
     }
 
-    if (sockets.size) {
-      await delay(configuration.gracefulTerminationTimeout);
-
+    // Wait for all in-flight connections to drain, forcefully terminating any
+    // open connections after the given timeout
+    try {
+      await waitFor(() => {
+        return sockets.size === 0 && secureSockets.size === 0;
+      }, {
+        interval: 10,
+        timeout: configuration.gracefulTerminationTimeout,
+      });
+    } catch {
+      // Ignore timeout errors
+    } finally {
       for (const socket of sockets) {
         destroySocket(socket);
       }
-    }
-
-    if (secureSockets.size) {
-      await delay(configuration.gracefulTerminationTimeout);
 
       for (const socket of secureSockets) {
         destroySocket(socket);
