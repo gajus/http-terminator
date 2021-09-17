@@ -18,7 +18,7 @@
   "dependencies": {
     "delay": "^5.0.0",
     "roarr": "^7.0.4",
-    "type-fest": "^2.3.2"
+    "type-fest": "^2.3.3"
   },
   "description": "Gracefully terminates HTTP(S) server.",
   "devDependencies": {
