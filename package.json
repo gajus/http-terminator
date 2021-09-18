@@ -28,7 +28,6 @@
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-transform-export-default-name": "^2.1.0",
     "coveralls": "^3.1.1",
-    "del-cli": "^4.0.1",
     "eslint": "^7.32.0",
     "eslint-config-canonical": "^27.0.1",
     "gitdown": "^3.1.4",
@@ -61,7 +60,7 @@
     "url": "https://github.com/gajus/http-terminator"
   },
   "scripts": {
-    "build": "del-cli ./dist && tsc",
+    "build": "rm -fr ./dist && tsc",
     "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && tsc --noEmit",
     "test": "NODE_ENV=test ava --serial --verbose"
