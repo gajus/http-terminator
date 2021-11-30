@@ -4,7 +4,7 @@ import http from 'http';
 import waitFor from 'p-wait-for';
 import type {
   Duplex,
-} from 'node:stream';
+} from 'stream';
 import Logger from '../Logger';
 import type {
   HttpTerminatorConfigurationInput,
