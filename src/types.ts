@@ -6,7 +6,7 @@ import type {
 } from 'https';
 import type {
   Duplex,
-} from 'node:stream';
+} from 'stream';
 import type {
   Merge,
 } from 'type-fest';
