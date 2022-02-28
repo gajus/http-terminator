@@ -3,9 +3,15 @@ import test from 'ava';
 import delay from 'delay';
 import safeGot from 'got';
 import sinon from 'sinon';
-import createInternalHttpTerminator from '../../../src/factories/createInternalHttpTerminator';
-import createHttpServer from '../../helpers/createHttpServer';
-import createHttpsServer from '../../helpers/createHttpsServer';
+import {
+  createInternalHttpTerminator,
+} from '../../../src/factories/createInternalHttpTerminator';
+import {
+  createHttpServer,
+} from '../../helpers/createHttpServer';
+import {
+  createHttpsServer,
+} from '../../helpers/createHttpsServer';
 
 const got = safeGot.extend({
   https: {

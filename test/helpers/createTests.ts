@@ -5,7 +5,9 @@ import test from 'ava';
 import delay from 'delay';
 import safeGot from 'got';
 import sinon from 'sinon';
-import createHttpTerminator from '../../src/factories/createHttpTerminator';
+import {
+  createHttpTerminator,
+} from '../../src/factories/createHttpTerminator';
 import type {
   HttpServerFactory,
 } from './createHttpServer';
@@ -21,7 +23,7 @@ const got = safeGot.extend({
 
 const KeepAliveHttpsAgent = KeepAliveHttpAgent.HttpsAgent;
 
-export default (
+export const createTests = (
   createHttpServer: HttpServerFactory | HttpsServerFactory,
 ): void => {
   test('terminates HTTP server with no connections', async (t) => {

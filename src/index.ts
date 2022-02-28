@@ -1,5 +1,5 @@
 export {
-  default as createHttpTerminator,
+  createHttpTerminator,
 } from './factories/createHttpTerminator';
 export type {
   HttpTerminator,

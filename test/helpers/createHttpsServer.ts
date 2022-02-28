@@ -25,7 +25,7 @@ type HttpsServer = {
 
 export type HttpsServerFactory = (requestHandler: RequestHandler) => Promise<HttpsServer>;
 
-export default async (requestHandler: RequestHandler): Promise<HttpsServer> => {
+export const createHttpsServer = async (requestHandler: RequestHandler): Promise<HttpsServer> => {
   const {
     serviceKey,
     certificate,

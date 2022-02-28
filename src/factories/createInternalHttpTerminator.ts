@@ -5,7 +5,9 @@ import waitFor from 'p-wait-for';
 import type {
   Duplex,
 } from 'stream';
-import Logger from '../Logger';
+import {
+  Logger,
+} from '../Logger';
 import type {
   HttpTerminatorConfigurationInput,
   InternalHttpTerminator,
@@ -19,7 +21,7 @@ const configurationDefaults = {
   gracefulTerminationTimeout: 1_000,
 };
 
-export default (
+export const createInternalHttpTerminator = (
   configurationInput: HttpTerminatorConfigurationInput,
 ): InternalHttpTerminator => {
   const configuration = {

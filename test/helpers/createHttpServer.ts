@@ -22,7 +22,7 @@ type HttpServerType = {
 
 export type HttpServerFactory = (requestHandler: RequestHandler) => Promise<HttpServerType>;
 
-export default (
+export const createHttpServer = (
   requestHandler: RequestHandler,
 ): Promise<HttpServerType> => {
   const server = createServer(requestHandler);
