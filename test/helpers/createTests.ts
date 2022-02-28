@@ -9,11 +9,8 @@ import {
   createHttpTerminator,
 } from '../../src/factories/createHttpTerminator';
 import type {
-  HttpServerFactory,
-} from './createHttpServer';
-import type {
-  HttpsServerFactory,
-} from './createHttpsServer';
+  TestServerFactory,
+} from './types';
 
 const got = safeGot.extend({
   https: {
@@ -24,29 +21,28 @@ const got = safeGot.extend({
 const KeepAliveHttpsAgent = KeepAliveHttpAgent.HttpsAgent;
 
 export const createTests = (
-  createHttpServer: HttpServerFactory | HttpsServerFactory,
+  createTestServer: TestServerFactory,
 ): void => {
   test('terminates HTTP server with no connections', async (t) => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const httpServer = await createHttpServer(() => {});
+    const testServer = await createTestServer(() => {});
 
     t.timeout(100);
 
-    t.true(httpServer.server.listening);
+    t.true(testServer.server.listening);
 
     const terminator = createHttpTerminator({
-      server: httpServer.server,
+      server: testServer.server,
     });
 
     await terminator.terminate();
 
-    t.false(httpServer.server.listening);
+    t.false(testServer.server.listening);
   });
 
   test('terminates hanging sockets after gracefulTerminationTimeout', async (t) => {
     const spy = sinon.spy();
 
-    const httpServer = await createHttpServer(() => {
+    const testServer = await createTestServer(() => {
       spy();
     });
 
@@ -54,10 +50,10 @@ export const createTests = (
 
     const terminator = createHttpTerminator({
       gracefulTerminationTimeout: 150,
-      server: httpServer.server,
+      server: testServer.server,
     });
 
-    void got(httpServer.url);
+    void got(testServer.url);
 
     await delay(50);
 
@@ -68,11 +64,11 @@ export const createTests = (
     await delay(100);
 
     // The timeout has not passed.
-    t.is(await httpServer.getConnections(), 1);
+    t.is(await testServer.getConnections(), 1);
 
     await delay(100);
 
-    t.is(await httpServer.getConnections(), 0);
+    t.is(await testServer.getConnections(), 0);
   });
 
   test('server stops accepting new connections after terminator.terminate() is called', async (t) => {
@@ -80,28 +76,28 @@ export const createTests = (
 
     stub
       .onCall(0)
-      .callsFake((incomingMessage, outgoingMessage) => {
+      .callsFake((serverResponse) => {
         setTimeout(() => {
-          outgoingMessage.end('foo');
+          serverResponse.end('foo');
         }, 100);
       });
 
     stub
       .onCall(1)
-      .callsFake((incomingMessage, outgoingMessage) => {
-        outgoingMessage.end('bar');
+      .callsFake((serverResponse) => {
+        serverResponse.end('bar');
       });
 
-    const httpServer = await createHttpServer(stub);
+    const testServer = await createTestServer(stub);
 
     t.timeout(500);
 
     const terminator = createHttpTerminator({
       gracefulTerminationTimeout: 150,
-      server: httpServer.server,
+      server: testServer.server,
     });
 
-    const request0 = got(httpServer.url);
+    const request0 = got(testServer.url);
 
     await delay(50);
 
@@ -109,7 +105,7 @@ export const createTests = (
 
     await delay(50);
 
-    const request1 = got(httpServer.url, {
+    const request1 = got(testServer.url, {
       retry: 0,
       timeout: {
         connect: 50,
@@ -126,9 +122,9 @@ export const createTests = (
   });
 
   test('ongoing requests receive {connection: close} header', async (t) => {
-    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+    const testServer = await createTestServer((serverResponse) => {
       setTimeout(() => {
-        outgoingMessage.end('foo');
+        serverResponse.end('foo');
       }, 100);
     });
 
@@ -136,7 +132,7 @@ export const createTests = (
 
     const terminator = createHttpTerminator({
       gracefulTerminationTimeout: 150,
-      server: httpServer.server,
+      server: testServer.server,
     });
 
     const httpAgent = new KeepAliveHttpAgent({
@@ -147,7 +143,7 @@ export const createTests = (
       maxSockets: 1,
     });
 
-    const request = got(httpServer.url, {
+    const request = got(testServer.url, {
       agent: {
         http: httpAgent,
         https: httpsAgent,
@@ -169,33 +165,33 @@ export const createTests = (
 
     stub
       .onCall(0)
-      .callsFake((incomingMessage, outgoingMessage) => {
-        outgoingMessage.write('foo');
+      .callsFake((serverResponse) => {
+        serverResponse.write('foo');
 
         setTimeout(() => {
-          outgoingMessage.end('bar');
+          serverResponse.end('bar');
         }, 50);
       });
 
     stub
       .onCall(1)
-      .callsFake((incomingMessage, outgoingMessage) => {
+      .callsFake((serverResponse) => {
         // @todo Unable to intercept the response without the delay.
         // When `end()` is called immediately, the `request` event
         // already has `headersSent=true`. It is unclear how to intercept
         // the response beforehand.
         setTimeout(() => {
-          outgoingMessage.end('baz');
+          serverResponse.end('baz');
         }, 50);
       });
 
-    const httpServer = await createHttpServer(stub);
+    const testServer = await createTestServer(stub);
 
     t.timeout(1_000);
 
     const terminator = createHttpTerminator({
       gracefulTerminationTimeout: 150,
-      server: httpServer.server,
+      server: testServer.server,
     });
 
     const httpAgent = new KeepAliveHttpAgent({
@@ -206,7 +202,7 @@ export const createTests = (
       maxSockets: 1,
     });
 
-    const request0 = got(httpServer.url, {
+    const request0 = got(testServer.url, {
       agent: {
         http: httpAgent,
         https: httpsAgent,
@@ -217,7 +213,7 @@ export const createTests = (
 
     void terminator.terminate();
 
-    const request1 = got(httpServer.url, {
+    const request1 = got(testServer.url, {
       agent: {
         http: httpAgent,
         https: httpsAgent,
@@ -241,16 +237,16 @@ export const createTests = (
   });
 
   test('does not send {connection: close} when server is not terminating', async (t) => {
-    const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+    const testServer = await createTestServer((serverResponse) => {
       setTimeout(() => {
-        outgoingMessage.end('foo');
+        serverResponse.end('foo');
       }, 50);
     });
 
     t.timeout(100);
 
     createHttpTerminator({
-      server: httpServer.server,
+      server: testServer.server,
     });
 
     const httpAgent = new KeepAliveHttpAgent({
@@ -261,7 +257,7 @@ export const createTests = (
       maxSockets: 1,
     });
 
-    const response = await got(httpServer.url, {
+    const response = await got(testServer.url, {
       agent: {
         http: httpAgent,
         https: httpsAgent,

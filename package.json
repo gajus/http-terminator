@@ -23,6 +23,7 @@
   },
   "description": "Gracefully terminates HTTP(S) server.",
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/node": "^10.0.0",
     "agentkeepalive": "^4.1.4",
     "ava": "^3.15.0",
@@ -31,6 +32,7 @@
     "coveralls": "^3.1.1",
     "eslint": "^8.10.0",
     "eslint-config-canonical": "^33.0.1",
+    "express": "^4.17.3",
     "gitdown": "^3.1.4",
     "got": "^11.8.2",
     "husky": "^7.0.2",

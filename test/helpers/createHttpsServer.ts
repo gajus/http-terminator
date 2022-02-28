@@ -1,10 +1,3 @@
-import type {
-  IncomingMessage as HttpIncomingMessage,
-  ServerResponse as HttpServerResponse,
-} from 'http';
-import type {
-  Server,
-} from 'https';
 import {
   createServer,
 } from 'https';
@@ -12,20 +5,11 @@ import {
   promisify,
 } from 'util';
 import pem from 'pem';
+import type {
+  TestServerFactory,
+} from './types';
 
-type RequestHandler = (incomingMessage: HttpIncomingMessage, outgoingMessage: HttpServerResponse) => void;
-
-type HttpsServer = {
-  readonly getConnections: () => Promise<number>,
-  readonly port: number,
-  readonly server: Server,
-  readonly stop: () => Promise<void>,
-  readonly url: string,
-};
-
-export type HttpsServerFactory = (requestHandler: RequestHandler) => Promise<HttpsServer>;
-
-export const createHttpsServer = async (requestHandler: RequestHandler): Promise<HttpsServer> => {
+export const createHttpsServer: TestServerFactory = async (requestHandler) => {
   const {
     serviceKey,
     certificate,
@@ -43,7 +27,9 @@ export const createHttpsServer = async (requestHandler: RequestHandler): Promise
 
   const server = createServer(
     httpsOptions,
-    requestHandler,
+    (incomingMessage, serverResponse) => {
+      requestHandler(serverResponse);
+    },
   );
 
   let serverShutingDown;

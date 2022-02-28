@@ -71,9 +71,9 @@ test('terminates hanging sockets after httpResponseTimeout', async (t) => {
 test('server stops accepting new connections after terminator.terminate() is called', async (t) => {
   t.timeout(500);
 
-  const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+  const httpServer = await createHttpServer((serverResponse) => {
     setTimeout(() => {
-      outgoingMessage.end('foo');
+      serverResponse.end('foo');
     }, 100);
   });
 
@@ -108,9 +108,9 @@ test('server stops accepting new connections after terminator.terminate() is cal
 test('ongoing requests receive {connection: close} header', async (t) => {
   t.timeout(500);
 
-  const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
+  const httpServer = await createHttpServer((serverResponse) => {
     setTimeout(() => {
-      outgoingMessage.end('foo');
+      serverResponse.end('foo');
     }, 100);
   });
 
@@ -142,23 +142,23 @@ test('ongoing requests receive {connection: close} header (new request reusing a
 
   stub
     .onCall(0)
-    .callsFake((incomingMessage, outgoingMessage) => {
-      outgoingMessage.write('foo');
+    .callsFake((serverResponse) => {
+      serverResponse.write('foo');
 
       setTimeout(() => {
-        outgoingMessage.end('bar');
+        serverResponse.end('bar');
       }, 50);
     });
 
   stub
     .onCall(1)
-    .callsFake((incomingMessage, outgoingMessage) => {
+    .callsFake((serverResponse) => {
       // @todo Unable to intercept the response without the delay.
       // When `end()` is called immediately, the `request` event
       // already has `headersSent=true`. It is unclear how to intercept
       // the response beforehand.
       setTimeout(() => {
-        outgoingMessage.end('baz');
+        serverResponse.end('baz');
       }, 50);
     });
 
@@ -208,8 +208,8 @@ test('ongoing requests receive {connection: close} header (new request reusing a
 test('empties internal socket collection', async (t) => {
   t.timeout(500);
 
-  const httpServer = await createHttpServer((incomingMessage, outgoingMessage) => {
-    outgoingMessage.end('foo');
+  const httpServer = await createHttpServer((serverResponse) => {
+    serverResponse.end('foo');
   });
 
   const terminator = createInternalHttpTerminator({
@@ -230,8 +230,8 @@ test('empties internal socket collection', async (t) => {
 test('empties internal socket collection for https server', async (t) => {
   t.timeout(500);
 
-  const httpsServer = await createHttpsServer((incomingMessage, outgoingMessage) => {
-    outgoingMessage.end('foo');
+  const httpsServer = await createHttpsServer((serverResponse) => {
+    serverResponse.end('foo');
   });
 
   const terminator = createInternalHttpTerminator({
@@ -251,9 +251,9 @@ test('empties internal socket collection for https server', async (t) => {
 test('closes immediately after in-flight connections are closed (#16)', async (t) => {
   t.timeout(1_000);
 
-  const spy = sinon.spy((incomingMessage, outgoingMessage) => {
+  const spy = sinon.spy((serverResponse) => {
     setTimeout(() => {
-      outgoingMessage.end('foo');
+      serverResponse.end('foo');
     }, 100);
   });
 
@@ -274,7 +274,7 @@ test('closes immediately after in-flight connections are closed (#16)', async (t
 
   void terminator.terminate();
 
-  // Wait for outgoingMessage.end to be called, plus a few extra ms for the
+  // Wait for serverResponse.end to be called, plus a few extra ms for the
   // terminator to finish polling in-flight connections. (Do not, however, wait
   // long enough to trigger graceful termination.)
   await delay(75);

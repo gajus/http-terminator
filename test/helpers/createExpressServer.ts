@@ -1,15 +1,17 @@
 import {
-  createServer,
-} from 'http';
-import {
   promisify,
 } from 'util';
+import express from 'express';
 import type {
   TestServerFactory,
 } from './types';
 
-export const createHttpServer: TestServerFactory = (requestHandler) => {
-  const server = createServer((incomingMessage, serverResponse) => {
+export const createExpressServer: TestServerFactory = (requestHandler) => {
+  let server;
+
+  const app = express();
+
+  app.use((incomingMessage, serverResponse) => {
     requestHandler(serverResponse);
   });
 
@@ -30,10 +32,7 @@ export const createHttpServer: TestServerFactory = (requestHandler) => {
   };
 
   return new Promise((resolve, reject) => {
-    server.once('error', reject);
-
-    server.listen(() => {
-      // @ts-expect-error-error address should be always available inside the `.listen()` block.
+    server = app.listen(() => {
       const port = server.address().port;
       const url = 'http://localhost:' + port;
 
@@ -45,5 +44,7 @@ export const createHttpServer: TestServerFactory = (requestHandler) => {
         url,
       });
     });
+
+    server.once('error', reject);
   });
 };
