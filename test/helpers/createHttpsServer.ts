@@ -62,7 +62,7 @@ export const createHttpsServer = async (requestHandler: RequestHandler): Promise
     return promisify(server.getConnections.bind(server))();
   };
 
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     server.once('error', reject);
 
     server.listen(() => {

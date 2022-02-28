@@ -57,13 +57,13 @@ export const createTests = (
       server: httpServer.server,
     });
 
-    got(httpServer.url);
+    void got(httpServer.url);
 
     await delay(50);
 
     t.true(spy.called);
 
-    terminator.terminate();
+    void terminator.terminate();
 
     await delay(100);
 
@@ -105,7 +105,7 @@ export const createTests = (
 
     await delay(50);
 
-    terminator.terminate();
+    void terminator.terminate();
 
     await delay(50);
 
@@ -156,7 +156,7 @@ export const createTests = (
 
     await delay(50);
 
-    terminator.terminate();
+    void terminator.terminate();
 
     const response = await request;
 
@@ -215,7 +215,7 @@ export const createTests = (
 
     await delay(50);
 
-    terminator.terminate();
+    void terminator.terminate();
 
     const request1 = got(httpServer.url, {
       agent: {

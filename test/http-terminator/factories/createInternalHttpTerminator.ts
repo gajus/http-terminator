@@ -50,13 +50,13 @@ test('terminates hanging sockets after httpResponseTimeout', async (t) => {
     server: httpServer.server,
   });
 
-  got(httpServer.url);
+  void got(httpServer.url);
 
   await delay(50);
 
   t.true(spy.called);
 
-  terminator.terminate();
+  void terminator.terminate();
 
   await delay(100);
 
@@ -86,7 +86,7 @@ test('server stops accepting new connections after terminator.terminate() is cal
 
   await delay(50);
 
-  terminator.terminate();
+  void terminator.terminate();
 
   await delay(50);
 
@@ -127,7 +127,7 @@ test('ongoing requests receive {connection: close} header', async (t) => {
 
   await delay(50);
 
-  terminator.terminate();
+  void terminator.terminate();
 
   const response = await request;
 
@@ -181,7 +181,7 @@ test('ongoing requests receive {connection: close} header (new request reusing a
 
   await delay(50);
 
-  terminator.terminate();
+  void terminator.terminate();
 
   const request1 = got(httpServer.url, {
     agent: {
@@ -266,13 +266,13 @@ test('closes immediately after in-flight connections are closed (#16)', async (t
     server: httpServer.server,
   });
 
-  got(httpServer.url);
+  void got(httpServer.url);
 
   await delay(50);
 
   t.is(await httpServer.getConnections(), 1);
 
-  terminator.terminate();
+  void terminator.terminate();
 
   // Wait for outgoingMessage.end to be called, plus a few extra ms for the
   // terminator to finish polling in-flight connections. (Do not, however, wait
