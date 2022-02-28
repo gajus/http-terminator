@@ -33,6 +33,7 @@
     "eslint": "^8.10.0",
     "eslint-config-canonical": "^33.0.1",
     "express": "^4.17.3",
+    "fastify": "^3.27.2",
     "gitdown": "^3.1.4",
     "got": "^11.8.2",
     "husky": "^7.0.2",
