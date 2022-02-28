@@ -88,6 +88,28 @@ await httpTerminator.terminate();
 
 ```
 
+### Usage with Fastify
+
+Usage with [Fastify](https://www.npmjs.com/package/fastify) example:
+
+```js
+import fastify from 'fastify';
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+const app = fastify();
+
+void app.listen(0);
+
+const httpTerminator = createHttpTerminator({
+  server: app.server,
+});
+
+await httpTerminator.terminate();
+
+```
+
 ### Usage with Koa
 
 Usage with [Koa](https://www.npmjs.com/package/koa) example:

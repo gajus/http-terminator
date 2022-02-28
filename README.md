@@ -14,6 +14,7 @@ Gracefully terminates HTTP(S) server.
     * [API](#http-terminator-api)
     * [Usage](#http-terminator-usage)
         * [Usage with Express](#http-terminator-usage-usage-with-express)
+        * [Usage with Fastify](#http-terminator-usage-usage-with-fastify)
         * [Usage with Koa](#http-terminator-usage-usage-with-koa)
         * [Usage with other HTTP frameworks](#http-terminator-usage-usage-with-other-http-frameworks)
     * [Alternative libraries](#http-terminator-alternative-libraries)
@@ -97,6 +98,29 @@ const server = app.listen();
 
 const httpTerminator = createHttpTerminator({
   server,
+});
+
+await httpTerminator.terminate();
+
+```
+
+<a name="http-terminator-usage-usage-with-fastify"></a>
+### Usage with Fastify
+
+Usage with [Fastify](https://www.npmjs.com/package/fastify) example:
+
+```js
+import fastify from 'fastify';
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+const app = fastify();
+
+void app.listen(0);
+
+const httpTerminator = createHttpTerminator({
+  server: app.server,
 });
 
 await httpTerminator.terminate();
