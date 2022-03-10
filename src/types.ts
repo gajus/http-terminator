@@ -2,6 +2,9 @@ import type {
   Server as HttpServer,
 } from 'http';
 import type {
+  Http2SecureServer,
+} from 'http2';
+import type {
   Server as HttpsServer,
 } from 'https';
 import type {
@@ -17,7 +20,7 @@ import type {
  */
 export type HttpTerminatorConfigurationInput = {
   readonly gracefulTerminationTimeout?: number,
-  readonly server: HttpServer | HttpsServer,
+  readonly server: Http2SecureServer | HttpServer | HttpsServer,
 };
 
 /**
