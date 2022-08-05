@@ -18,7 +18,7 @@ const log = Logger.child({
 });
 
 const configurationDefaults = {
-  gracefulTerminationTimeout: 1_000,
+  gracefulTerminationTimeout: 5000,
 };
 
 export const createInternalHttpTerminator = (
